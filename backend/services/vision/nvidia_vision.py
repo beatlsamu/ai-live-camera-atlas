@@ -1,4 +1,3 @@
-
 import os
 import requests
 
@@ -11,19 +10,33 @@ VISION_MODEL = os.getenv(
 
 VISION_URL = f"https://ai.api.nvidia.com/v1/vlm/{VISION_MODEL}"
 
+
 class NvidiaVisionProvider:
 
     def analyze(self, image_url, channel):
 
-        prompt = '''
-        Analyze this urban live camera scene.
-        Return:
+        prompt = f"""
+        Analyze this live urban camera scene from:
+
+        City: {channel.city}
+        Place: {channel.place}
+        Country: {channel.country}
+
+        Return a detailed analysis including:
+
         - traffic density
         - pedestrian density
-        - weather
-        - lighting
-        - unusual activity
-        '''
+        - weather conditions
+        - lighting conditions
+        - visibility quality
+        - possible incidents
+        - unusual behavior
+        - congestion level
+        - environmental atmosphere
+        - time-of-day interpretation
+
+        Keep the response structured and concise.
+        """
 
         payload = {
             "messages": [
@@ -35,9 +48,9 @@ class NvidiaVisionProvider:
                             "text": prompt
                         },
                         {
-    "type": "image",
-    "image_url": image_url
-}
+                            "type": "image_url",
+                            "image_url": image_url
+                        }
                     ]
                 }
             ],
@@ -53,14 +66,19 @@ class NvidiaVisionProvider:
             "content-type": "application/json"
         }
 
-        response = requests.post(
-            VISION_URL,
-            json=payload,
-            headers=headers,
-            timeout=60
-        )
-
         try:
+
+            response = requests.post(
+                VISION_URL,
+                json=payload,
+                headers=headers,
+                timeout=60
+            )
+
             return response.json()
-        except Exception:
-            return {"error": response.text}
+
+        except Exception as e:
+
+            return {
+                "error": str(e)
+            }
