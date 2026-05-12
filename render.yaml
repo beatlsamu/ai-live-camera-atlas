@@ -1,36 +1,29 @@
 services:
   - type: web
-    name: ai-live-camera-atlas-api
+    name: ai-live-camera-atlas
     env: python
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    buildCommand: >
+      cd ../frontend && npm install && npm run build && cd ../backend &&
+      pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     autoDeploy: true
     envVars:
-      - key: FRONTEND_ORIGIN
-        value: https://your-frontend.onrender.com
+      - key: FRONTEND_DIST_PATH
+        value: ../frontend/dist
       - key: ROTATION_SECONDS
         value: "30"
       - key: VISION_PROVIDER
-        value: mock
+        value: nvidia
       - key: LLM_PROVIDER
-        value: mock
+        value: nvidia
+      - key: NVIDIA_VISION_MODEL
+        value: google/paligemma
+      - key: NVIDIA_LLM_MODEL
+        value: meta/llama-3.1-8b-instruct
       - key: VISION_API_URL
-        value: ""
+        value: https://ai.api.nvidia.com/v1/vlm/google/paligemma
       - key: LLM_API_URL
-        value: ""
-      - key: VISION_API_KEY
-        sync: false
-      - key: LLM_API_KEY
-        sync: false
-
-  - type: web
-    name: ai-live-camera-atlas-web
-    env: node
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    startCommand: npm run preview -- --host 0.0.0.0 --port $PORT
-    autoDeploy: true
-    envVars:
-      - key: VITE_API_BASE_URL
-        value: https://your-backend.onrender.com
+        value: https://integrate.api.nvidia.com/v1/chat/completions
+      - key: NVIDIA_API_KEY
+        sync: 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
