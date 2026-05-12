@@ -1,0 +1,46 @@
+{
+  "type": "object",
+  "required": [
+    "channelId",
+    "timestamp",
+    "traffic",
+    "pedestrians",
+    "weather",
+    "lighting",
+    "anomalies",
+    "confidence",
+    "shortNarrative"
+  ],
+  "properties": {
+    "channelId": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "traffic": {
+      "type": "string"
+    },
+    "pedestrians": {
+      "type": "string"
+    },
+    "weather": {
+      "type": "string"
+    },
+    "lighting": {
+      "type": "string"
+    },
+    "anomalies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "shortNarrative": {
+      "type": "string"
+    }
+  }
+}

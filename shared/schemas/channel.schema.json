@@ -1,0 +1,56 @@
+{
+  "type": "object",
+  "required": [
+    "id",
+    "city",
+    "country",
+    "place",
+    "type",
+    "timezone",
+    "provider",
+    "imageUrl",
+    "sourceUrl"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "place": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "traffic",
+        "airport",
+        "city",
+        "coast",
+        "weather"
+      ]
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "imageUrl": {
+      "type": "string"
+    },
+    "sourceUrl": {
+      "type": "string"
+    },
+    "refreshSeconds": {
+      "type": "integer"
+    },
+    "active": {
+      "type": "boolean"
+    }
+  }
+}
