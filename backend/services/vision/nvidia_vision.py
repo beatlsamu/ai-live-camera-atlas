@@ -35,11 +35,9 @@ class NvidiaVisionProvider:
                             "text": prompt
                         },
                         {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": image_url
-                            }
-                        }
+    "type": "image",
+    "image_url": image_url
+}
                     ]
                 }
             ],
