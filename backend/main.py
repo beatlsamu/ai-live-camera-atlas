@@ -8,6 +8,8 @@ from uuid import uuid4
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from services.vision.nvidia_vision import NvidiaVisionProvider
@@ -21,6 +23,7 @@ load_dotenv()
 
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "*")
 ROTATION_SECONDS = int(os.getenv("ROTATION_SECONDS", "30"))
+FRONTEND_DIST = os.getenv("FRONTEND_DIST_PATH", "../frontend/dist")
 
 # =========================
 # FASTAPI
@@ -175,26 +178,14 @@ def ingest_observation(
     channel: Channel
 ) -> Observation:
 
-    # =====================
-    # VISION ANALYSIS
-    # =====================
-
     vision_result = VISION.analyze(
         channel.image_url,
         channel
     )
 
-    # =====================
-    # TEMPORAL MEMORY
-    # =====================
-
     memory = OBSERVATIONS_BY_CHANNEL[
         channel.id
     ][-5:]
-
-    # =====================
-    # LLM NARRATION
-    # =====================
 
     llm_result = LLM.narrate(
         channel,
@@ -209,10 +200,6 @@ def ingest_observation(
             "narrative",
             ""
         )
-
-    # =====================
-    # OBSERVATION OBJECT
-    # =====================
 
     obs = Observation(
         channel_id=channel.id,
@@ -264,15 +251,6 @@ def startup_seed():
 # =========================
 # HEALTH
 # =========================
-
-@app.get("/")
-def root():
-    return {
-        "name": "AI Live Camera Atlas",
-        "status": "online",
-        "version": "0.3.0"
-    }
-
 
 @app.get("/api/health")
 def health():
@@ -354,3 +332,21 @@ def memory(channel_id: str):
 def world_summary():
 
     return build_global_summary()
+
+# =========================
+# FRONTEND STATIC FILES
+# =========================
+
+if os.path.isdir(FRONTEND_DIST):
+    app.mount(
+        "/assets",
+        StaticFiles(directory=f"{FRONTEND_DIST}/assets"),
+        name="assets"
+    )
+
+@app.get("/{full_path:path}")
+def serve_frontend(full_path: str):
+    index = f"{FRONTEND_DIST}/index.html"
+    if os.path.isfile(index):
+        return FileResponse(index)
+    return {"name": "AI Live Camera Atlas", "status": "online", "version": "0.3.0"}
